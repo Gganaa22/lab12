@@ -21,8 +21,18 @@ public class BankAccount {
         // TODO 1.1: owner null эсвэл хоосон (blank) бол
         //          IllegalArgumentException шид.
         //          Жишээ: "owner must not be blank"
+
+        if (owner == null || owner.isBlank()) {
+            throw new IllegalArgumentException("owner must not be blank");
+        }
+
         // TODO 1.2: initialBalance < 0 бол IllegalArgumentException шид.
         //          Жишээ: "initialBalance must be non-negative"
+
+        if (initialBalance < 0) {
+            throw new IllegalArgumentException("initialBalance must be non-negative");
+        }
+
         this.owner = owner;
         this.balance = initialBalance;
     }
@@ -41,8 +51,17 @@ public class BankAccount {
     public void withdraw(long amount) {
         // TODO 1.3: amount <= 0 бол IllegalArgumentException шид.
         //           ("amount must be positive")
+        if (amount <= 0) {
+            throw new IllegalArgumentException("amount must be positive");
+        }
         // TODO 1.4: balance < amount бол InsufficientFundsException шид.
         //           (жишээ: "insufficient funds: balance=1000, requested=5000")
+        
+        if (balance < amount) {
+            throw new InsufficientFundsException(
+                "insufficient funds: balance=" + balance + ", requested=" + amount);
+        }
+
         balance -= amount;
 
         // TODO 1.5: invariant шалгах assert ашиглах:
@@ -54,11 +73,22 @@ public class BankAccount {
      */
     public static void transfer(BankAccount from, BankAccount to, long amount) {
         // TODO 1.6: from эсвэл to нь null бол IllegalArgumentException шид.
+        
+        if (from == null || to == null) {
+            throw new IllegalArgumentException("accounts must not be null");
+        }
         // TODO 1.7: from == to бол IllegalArgumentException шид
         //           ("cannot transfer to the same account").
+
+        if (from == to) {
+            throw new IllegalArgumentException("cannot transfer to the same account");
+        }
+
+        from.withdraw(amount);
+        to.deposit(amount);
         // TODO 1.8: withdraw → дараа нь to.deposit хийх.
         //           Анхаар: from.withdraw амжилттай бол л deposit хийнэ.
-        throw new UnsupportedOperationException("TODO");
+        //throw new UnsupportedOperationException("TODO");
     }
 
     /**
@@ -66,6 +96,9 @@ public class BankAccount {
      */
     public void deposit(long amount) {
         // TODO 1.9: amount <= 0 бол IllegalArgumentException шид.
+        if (amount <= 0) {
+            throw new IllegalArgumentException("amount must be positive");
+        }
         balance += amount;
     }
 }

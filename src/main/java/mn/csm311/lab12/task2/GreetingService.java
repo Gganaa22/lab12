@@ -25,6 +25,9 @@ public class GreetingService {
      */
     public String greet(String email) {
         // TODO 2.3: Optional API-г ашиглан шийдлийг бич.
-        throw new UnsupportedOperationException("TODO");
+        //throw new UnsupportedOperationException("TODO");
+        return repository.findByEmail(email)
+            .map(user -> "Сайн байна уу, " + user.name() + "!")
+            .orElse("Сайн байна уу, Зочин!");
     }
 }

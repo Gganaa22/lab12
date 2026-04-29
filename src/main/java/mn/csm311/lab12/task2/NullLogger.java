@@ -12,4 +12,13 @@ public class NullLogger implements Logger {
     // TODO 2.2: Logger интерфэйсийн аргуудыг хэрэгжүүл.
     //   - log(String message): ЮУ Ч хийхгүй (console-д юу ч хэвлэхгүй).
     //   - logCount(): үргэлж 0 буцаана.
+     @Override
+    public void log(String message) {
+        // юу ч хийхгүй
+    }
+
+    @Override
+    public int logCount() {
+        return 0;
+    }
 }

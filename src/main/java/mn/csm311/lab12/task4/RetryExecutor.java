@@ -76,6 +76,34 @@ public class RetryExecutor {
         //          Заавар: exponential хэсгийг тооцоолоход
         //          (long)(baseDelayMs * Math.pow(2, attempt - 1)) ашиглаж болно.
         //          Jitter: (long)(Math.random() * baseDelayMs)
-        throw new UnsupportedOperationException("TODO 4.1");
+        //throw new UnsupportedOperationException("TODO 4.1");
+            RuntimeException lastError = null;
+
+    for (int attempt = 1; attempt <= maxAttempts; attempt++) {
+        try {
+            return op.get();
+        } catch (NonRetryableException e) {
+            throw e;
+        } catch (RuntimeException e) {
+            lastError = e;
+
+            if (attempt == maxAttempts) {
+                break;
+            }
+
+            long exponentialDelay = (long) (baseDelayMs * Math.pow(2, attempt - 1));
+            long jitter = (long) (Math.random() * (baseDelayMs + 1));
+            long delay = exponentialDelay + jitter;
+
+            try {
+                sleeper.sleep(delay);
+            } catch (InterruptedException interrupted) {
+                Thread.currentThread().interrupt();
+                throw new RuntimeException(interrupted);
+            }
+        }
+    }
+
+    throw lastError;
     }
 }

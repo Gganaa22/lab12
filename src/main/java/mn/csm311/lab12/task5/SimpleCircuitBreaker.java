@@ -91,14 +91,45 @@ public class SimpleCircuitBreaker {
      */
     public <T> T execute(Supplier<T> op) {
         // TODO 5.1
-        throw new UnsupportedOperationException("TODO 5.1");
+        //throw new UnsupportedOperationException("TODO 5.1");
+            State current = state();
+
+        if (current == State.OPEN) {
+            throw new CircuitBreakerOpenException("circuit is open");
+        }
+
+        try {
+            T result = op.get();
+            onSuccess();
+            return result;
+        } catch (RuntimeException e) {
+            onFailure();
+            throw e;
+        }
     }
 
     private void onSuccess() {
         // TODO 5.2
+        state = State.CLOSED;
+        failureCount = 0;
     }
 
     private void onFailure() {
         // TODO 5.3
+        if (state == State.HALF_OPEN) {
+            state = State.OPEN;
+            openedAt = clock.now();
+            failureCount = 0;
+            return;
+        }
+
+        if (state == State.CLOSED) {
+            failureCount++;
+
+            if (failureCount >= failureThreshold) {
+                state = State.OPEN;
+                openedAt = clock.now();
+        }
+    }
     }
 }

@@ -1,7 +1,6 @@
 package mn.csm311.lab12.task3;
 
 import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
@@ -38,25 +37,27 @@ public class FileConfigLoader {
 
     public AppConfig load(Path path) {
         // TODO 3.1: path null бол fail-fast
+        if (path == null) {
+            throw new IllegalArgumentException("path must not be null");
+        }
 
         Map<String, String> props = new HashMap<>();
 
         // TODO 3.2: Доорх блокыг try-with-resources, ConfigLoadException
         //           зохих exception translation-той болгон дахин бич.
-        BufferedReader reader = null;
-        try {
-            reader = new BufferedReader(new FileReader(path.toFile()));
+       
+        try (BufferedReader reader = Files.newBufferedReader(path)){
+           
             String line;
             while ((line = reader.readLine()) != null) {
                 parseLine(line, props);
             }
-        } catch (Exception e) {
+        } catch (NoSuchFileException e) {
             // Асуудал A: Exception залгих — log, throw үгүй
-        } finally {
+            throw new ConfigLoadException("config file not found: " + path, e);
+        } catch (IOException e) {
             // Асуудал B: close() ч бас throw хийж магадгүй
-            if (reader != null) {
-                try { reader.close(); } catch (IOException e) { /* залгих */ }
-            }
+            throw new ConfigLoadException("failed to read config: " + path, e);
         }
 
         return new AppConfig(props);

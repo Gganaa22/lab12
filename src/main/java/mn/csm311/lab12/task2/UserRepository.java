@@ -33,8 +33,9 @@ public class UserRepository {
      *           Заавар: Optional.ofNullable(...) нь энэ хоёрыг аль алиныг
      *           нэг дор хийнэ.
      */
-    public User findByEmail(String email) {
+    public Optional<User> findByEmail(String email) {
         // TODO 2.1: өөрчлөх
-        return byEmail.get(email);
+        return Optional.ofNullable(byEmail.get(email));
     }
+    
 }
